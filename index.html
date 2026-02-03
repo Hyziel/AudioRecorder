@@ -363,7 +363,10 @@
             <div class="timer">00:00</div>
             <div class="file-size">0 MB</div>
         </div>
-
+<div class="setting-item" style="margin-bottom: 1.5rem;">
+    <label class="setting-label" for="student-name">Nom et Prénom de l'élève</label>
+    <input type="text" id="student-name" class="setting-select" placeholder="Ex: Jean Dupont" required>
+</div>
         <div class="audio-controls">
             <audio class="audio-player" controls></audio>
             <div class="buttons-container">
@@ -603,19 +606,20 @@
     this.downloadBtn.onclick = () => this.downloadRecording(blob, format);
 }
 
-           async shareRecording() {
+ async shareRecording() {
     const format = document.getElementById('format-select').value;
     const blob = new Blob(this.audioChunks, { type: `audio/${format}` });
     
-    // On prépare les données à envoyer
+    // Création du paquet de données
     const formData = new FormData();
+    formData.append('email', 'eleve@lycee.fr'); // Tu peux ajouter un champ pour l'email si tu veux
     formData.append('audio_file', blob, `enregistrement.${format}`);
-    formData.append('message', 'Nouvel enregistrement audio pour le projet FLSco');
+    formData.append('message', 'Soumission Production Orale - Axe 3');
 
-    this.showNotification('Envoi en cours...', 'warning');
+    this.showNotification('Envoi au professeur...', 'warning');
 
     try {
-        const response = await fetch('https://formspree.io/f/xeezbaar', { // <--- COLLE TON URL ICI
+        const response = await fetch('https://formspree.io/f/xeezbaar', {
             method: 'POST',
             body: formData,
             headers: {
@@ -624,14 +628,13 @@
         });
 
         if (response.ok) {
-            this.showNotification('Succès ! Enregistrement envoyé.', 'success');
-            this.shareBtn.disabled = true; // Empêche les envois multiples
+            this.showNotification('Enregistrement bien reçu !', 'success');
+            this.shareBtn.disabled = true; 
         } else {
-            this.showNotification('Erreur lors de l\'envoi à Formspree.', 'error');
+            this.showNotification('Erreur Formspree. Vérifie ton quota.', 'error');
         }
     } catch (err) {
-        console.error('Erreur API:', err);
-        this.showNotification('Impossible de contacter le serveur.', 'error');
+        this.showNotification('Erreur de connexion réseau.', 'error');
     }
 }
 
@@ -725,3 +728,4 @@
 </body>
 
 </html>
+
